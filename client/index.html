@@ -27,16 +27,17 @@
 
         // socket.on('tweet', (tweet) => {
         //     console.log('tweet', tweet)
-            
+
         // })
 
-        socket.on('tweet', (profilePic) => {
-            console.log('profilePic', profilePic)
+        socket.on('tweet', ({ profilePicUrl, text }) => {
+            console.log('text',text)
+            console.log('profilePicUrl from index.html', profilePicUrl)
             const tweetStream = document.getElementById("tweetStream");
 
             const tweetElImg = document.createElement('img');
-            tweetElImg.src = profilePic;
-            document.getElementById('tweetStream').appendChild(tweetElImg); 
+            tweetElImg.src = profilePicUrl;
+            document.getElementById('tweetStream').appendChild(tweetElImg);
         })
     </script>
 

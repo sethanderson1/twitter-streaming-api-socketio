@@ -10,6 +10,8 @@ const config = require('dotenv').config();
 // export BEARER_TOKEN='YOUR-TOKEN'
 const TOKEN = process.env.TWITTER_BEARER_TOKEN;
 
+
+
 const endpointURL = "https://api.twitter.com/2/users"
 // const endpointURL = "https://api.twitter.com/2/users/565807105"
 // const endpointURL = "https://api.twitter.com/2/users/by?usernames="
@@ -17,8 +19,9 @@ const endpointURL = "https://api.twitter.com/2/users"
 // ?expansions=pinned_tweet_id&user.fields=created_at&tweet.fields=created_at
 // ?expansions=pinned_tweet_id&user.fields=profile_image_url
 
-async function getUsers(id) {
+async function getUsers(id,cont) {
     console.log('getUsers ran')
+    console.log('cont in fetchProfilePic', cont)
 
     // These are the parameters for the API request
     // specify User names to fetch, and any additional fields that are required
@@ -43,6 +46,7 @@ async function getUsers(id) {
     })
 
     if (res.body) {
+        console.log(`res.body.data[0] for ${cont}`, res.body.data[0])
         return res.body;
     } else {
         throw new Error('Unsuccessful request')
