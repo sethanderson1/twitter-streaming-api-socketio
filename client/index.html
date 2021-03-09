@@ -14,10 +14,9 @@
 <body>
     <h1>Real-Time Tweet Stream</h1>
     <div>
-
         <div id="tweetStream">
-            <div id="dummyForScroll"></div>
         </div>
+        <div id="dummyForScroll"></div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.2/socket.io.js"
@@ -43,16 +42,22 @@
             document.getElementById('tweetStream').appendChild(tweetContainer)
             tweetContainer.setAttribute('id', `tweetContainer-${i}`);
             tweetContainer.setAttribute('class', `tweetContainer`);
+            document.getElementById('tweetStream').prepend(tweetContainer);
 
             // const tweetStream = document.getElementById("tweetStream");
             const tweetElImg = document.createElement('img');
             tweetElImg.src = profilePicUrl;
             document.getElementById(`tweetContainer-${i}`).appendChild(tweetElImg);
+            // document.getElementById(`tweetContainer-${i}`).prepend(tweetElImg);
 
 
             const tweetElText = document.createElement('p');
             tweetElText.innerHTML = text;
             document.getElementById(`tweetContainer-${i}`).appendChild(tweetElText);
+            // document.getElementById(`tweetContainer-${i}`).prepend(tweetElText);
+
+            // document.getElementById('dummyForScroll').scrollIntoView();
+            // document.getElementById(`tweetContainer-${i}`).scrollIntoView();
 
             i++;
         })
