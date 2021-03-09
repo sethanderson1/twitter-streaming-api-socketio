@@ -11,7 +11,7 @@ const getUsers = require('./getUsers');
 // console.log('getUsers', getUsers)
 
 let count = 0;
-let cnt = 0; 
+let cnt = 0;
 let cont = 0;
 
 const app = express();
@@ -23,14 +23,14 @@ app.get('/', (req, res) => {
     res.sendFile(path.resolve(__dirname, '../', 'client', 'index.html'))
 })
 
-app.get('/index.css', function(req, res) {
+app.get('/index.css', function (req, res) {
     res.sendFile(path.resolve(__dirname, '../', 'client', 'index.css'))
-  });
+});
 
 const rulesURL = `https://api.twitter.com/2/tweets/search/stream/rules`;
 const streamURL = `https://api.twitter.com/2/tweets/search/stream?tweet.fields=public_metrics&expansions=author_id`;
 
-const rules = [{ value: `looool` }];
+const rules = [{ value: `lol` }];
 
 // get stream rules
 async function getRules() {
@@ -93,7 +93,7 @@ async function fetchProfilePic(id) {
     try {
         console.log('fetchProfilePic ran')
         cont = cont + 1;
-        const response = await getUsers(id,cont);
+        const response = await getUsers(id, cont);
         // console.dir('response console dir', response, {
         //     depth: null,
         //     colors: true
@@ -102,7 +102,7 @@ async function fetchProfilePic(id) {
         // TODO: check make sure have a response and type is correct before 
         // seeing what's in response.data[0]
         const profilePicUrl = response.data[0].profile_image_url.replace('_normal', '');
-        console.log('profilePicUrl from getUsers', profilePicUrl)
+        // console.log('profilePicUrl from getUsers', profilePicUrl)
 
         return profilePicUrl;
     } catch (e) {
@@ -112,6 +112,7 @@ async function fetchProfilePic(id) {
     // process.exit();
 }
 
+const allTweets = [];
 function streamTweets(socket) {
     console.log('streamTweets ran')
 
@@ -125,22 +126,50 @@ function streamTweets(socket) {
         console.log('count in stream.on', count)
         try {
             const json = JSON.parse(data);
-            // console.log('json.data.id', json.data.id)
-            const text = json.data.text;
-            console.log('text', text)
-            // Await a fetch to get user object with the profile
-            // pic and then send it to client 
-            const id = json.data.author_id;
-            const profilePicUrl = await fetchProfilePic(id);
-            console.log('profilePicUrl returned from fetchProfilePic', profilePicUrl)
-            console.log('\n', '\n', '\n')
-            
+            console.log('json', json)
+            allTweets.push(json)
+            // const text = json.data.text;
+            // console.log('text', text)
+            // // Await a fetch to get user object with the profile
+            // // pic and then send it to client 
+            // const id = json.data.author_id;
+            // const profilePicUrl = await fetchProfilePic(id);
+            // // console.log('profilePicUrl returned from fetchProfilePic', profilePicUrl)
+            // console.log('\n', '\n', '\n')
+
+            // // setTimeout((socket) => {
+            // // }, 1000)
+
+            // queue.forEach(() => {
+            //     console.log('queue', queue)
+            //     setTimeout(() => {
+            //         socket.emit('tweet', { profilePicUrl, text })
+            //     }, 1000)
+            // })
+            // queue.shift();
+
+            // setInterval(() => {
+            // }, 1000)
+
             // socket.emit('tweet', json)
-            socket.emit('tweet', {profilePicUrl,text})
         } catch (error) {
 
         }
     })
+    setInterval(async function () {
+        // every 1000ms take the oldest tweet of the array a send it to me
+    
+        let nextTweet = allTweets.shift();
+        if (nextTweet) {
+            const text = nextTweet.data.text;
+            console.log('text', text)
+            // Await a fetch to get user object with the profile
+            // pic and then send it to client 
+            const id = nextTweet.data.author_id;
+            const profilePicUrl = await fetchProfilePic(id);
+            socket.emit("tweet", { profilePicUrl, text });
+        }
+    }, 1000);
 }
 
 
