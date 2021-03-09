@@ -7,16 +7,17 @@ const config = require('dotenv').config();
 const TOKEN = process.env.TWITTER_BEARER_TOKEN;
 const PORT = process.env.PORT || 3000;
 
-// const getUsers = require('./getUsers');
+const getUsers = require('./getUsers');
+// console.log('getUsers', getUsers)
 
 const app = express();
 
 const server = http.createServer(app);
 const io = socketio(server);
 
-// app.get('/', (req, res) => {
-//     res.sendFile(path.resolve(__dirname, '../', 'client', 'index.html'))
-// })
+app.get('/', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '../', 'client', 'index.html'))
+})
 
 const rulesURL = `https://api.twitter.com/2/tweets/search/stream/rules`;
 const streamURL = `https://api.twitter.com/2/tweets/search/stream?tweet.fields=public_metrics&expansions=author_id`;
@@ -31,7 +32,7 @@ async function getRules() {
         }
     })
 
-    console.log('getRules response.body', response.body)
+    // console.log('getRules response.body', response.body)
     return response.body
 }
 
@@ -47,19 +48,19 @@ async function setRules() {
             Authorization: `Bearer ${TOKEN}`
         }
     })
-    console.log('setRules response.body', response.body)
+    // console.log('setRules response.body', response.body)
     return response.body
 }
 
 // delete stream rules
 async function deleteRules(rules) {
-    console.log('deleteRules ran')
+    // console.log('deleteRules ran')
     if (!Array.isArray(rules.data)) {
         return null;
     }
 
     const ids = rules.data.map(el => el = el.id)
-    console.log('ids', ids)
+    // console.log('ids', ids)
 
     const data = {
         delete: {
@@ -78,52 +79,58 @@ async function deleteRules(rules) {
     return response.body
 }
 
+async function fetchProfilePic(id) {
+    try {
+        console.log('fetchProfilePic ran')
+
+        const response = await getUsers(id);
+        console.log('response from getUsers', response)
+        // console.dir('response console dir', response, {
+        //     depth: null,
+        //     colors: true
+        // });
+        const profilePic = response.data[0].profile_image_url.replace('_normal', '');
+        console.log('profilePic', profilePic)
+
+        return profilePic;
+    } catch (e) {
+        console.log(e);
+        // process.exit(-1);
+    }
+    // process.exit();
+}
+
 function streamTweets(socket) {
     console.log('streamTweets ran')
+
     const stream = needle.get(streamURL, {
         headers: {
             Authorization: `Bearer ${TOKEN}`
         }
     })
 
-    stream.on('data', (data) => {
+    stream.on('data', async (data) => {
         try {
             const json = JSON.parse(data);
             console.log('json', json)
-
-            // TODO: await a fetch to get user object with the profile
+            console.log('\n', '\n', '\n', '\n')
+            // Await a fetch to get user object with the profile
             // pic and then send it to client 
-
+            const id = json.data.author_id;
+            const profilePicUrl = await fetchProfilePic(id);
+            console.log('profilePicUrl returned from fetchPrfilePic', profilePicUrl)
 
             // socket.emit('tweet', json)
+            socket.emit('tweet', profilePicUrl)
         } catch (error) {
 
         }
     })
 }
 
-// io.on('connection', async () => {
-//     // console.log('client connected...')
 
-//     let currentRules
-//     try {
-//         currentRules = await getRules();
-//         console.log('currentRules', currentRules)
-//         await deleteRules(currentRules);
-//         await setRules();
-//     } catch (error) {
-//         console.error('error', error);
-//         process.exit(1);
-//     }
-
-//     streamTweets(io);
-// })
-
-
-
-
-
-; (async () => {
+io.on('connection', async () => {
+    // console.log('client connected...')
     let currentRules
     try {
         currentRules = await getRules();
@@ -134,8 +141,27 @@ function streamTweets(socket) {
         console.error('error', error);
         process.exit(1);
     }
+
     streamTweets(io);
-})();
+})
+
+
+
+
+
+// ; (async () => {
+//     let currentRules
+//     try {
+//         currentRules = await getRules();
+//         console.log('currentRules', currentRules)
+//         await deleteRules(currentRules);
+//         await setRules();
+//     } catch (error) {
+//         console.error('error', error);
+//         process.exit(1);
+//     }
+//     streamTweets(io);
+// })();
 
 
 

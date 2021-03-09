@@ -11,6 +11,8 @@
 <body>
     <h1>Hello</h1>
 
+    <div id="tweetStream"></div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.2/socket.io.js"
         integrity="sha512-YybopSVjZU0fe8TY4YDuQbP5bhwpGBE/T6eBUEZ0usM72IWBfWrgVI13qfX4V2A/W7Hdqnm7PIOYOwP9YHnICw=="
         crossorigin="anonymous">
@@ -23,14 +25,22 @@
             console.log('connected to server...')
         })
 
-        socket.on('tweet', (tweet) => {
-            console.log('tweet', tweet)
+        // socket.on('tweet', (tweet) => {
+        //     console.log('tweet', tweet)
             
+        // })
+
+        socket.on('tweet', (profilePic) => {
+            console.log('profilePic', profilePic)
+            const tweetStream = document.getElementById("tweetStream");
+
+            const tweetElImg = document.createElement('img');
+            tweetElImg.src = profilePic;
+            document.getElementById('tweetStream').appendChild(tweetElImg); 
         })
     </script>
 
 
-    <img src={'https://pbs.twimg.com/profile_images/1368769596346441728/y329M0ev_normal.jpg'} />
 </body>
 
 </html>

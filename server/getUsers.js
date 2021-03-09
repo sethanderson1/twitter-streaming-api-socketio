@@ -49,22 +49,22 @@ async function getUsers(id) {
     }
 }
 
-; (async () => {
-    try {
-        // Make request
-        const response = await getUsers();
-        console.dir(response, {
-            depth: null,
-            colors: true
-        });
-        const profilePic = response.data[0].profile_image_url.replace('_normal', '');
-        console.log('profilePic', profilePic)
+// ; (async () => {
+//     try {
+//         // Make request
+//         const response = await getUsers();
+//         console.dir(response, {
+//             depth: null,
+//             colors: true
+//         });
+//         const profilePic = response.data[0].profile_image_url.replace('_normal', '');
+//         console.log('profilePic', profilePic)
 
-    } catch (e) {
-        // console.log(e);
-        process.exit(-1);
-    }
-    process.exit();
-})();
+//     } catch (e) {
+//         // console.log(e);
+//         process.exit(-1);
+//     }
+//     process.exit();
+// })();
 
 module.exports = getUsers;
