@@ -114,6 +114,7 @@ async function fetchProfilePic(id) {
 
 const allTweets = [];
 function streamTweets(socket) {
+    console.log('socket', socket)
     console.log('streamTweets ran')
 
     const stream = needle.get(streamURL, {
@@ -121,44 +122,29 @@ function streamTweets(socket) {
             Authorization: `Bearer ${TOKEN}`
         }
     })
+
     stream.on('data', async (data) => {
         count = count + 1;
         console.log('count in stream.on', count)
-        try {
+
+        if ( allTweets.length >= 15) {
+            stream.pause();
+            console.log('There will be no additional data for  seconds.');
+            setTimeout(() => {
+                console.log('Now data will start flowing again.');
+                stream.resume();
+            }, 10000);
+        }
+        
             const json = JSON.parse(data);
             console.log('json', json)
             allTweets.push(json)
-            // const text = json.data.text;
-            // console.log('text', text)
-            // // Await a fetch to get user object with the profile
-            // // pic and then send it to client 
-            // const id = json.data.author_id;
-            // const profilePicUrl = await fetchProfilePic(id);
-            // // console.log('profilePicUrl returned from fetchProfilePic', profilePicUrl)
-            // console.log('\n', '\n', '\n')
-
-            // // setTimeout((socket) => {
-            // // }, 1000)
-
-            // queue.forEach(() => {
-            //     console.log('queue', queue)
-            //     setTimeout(() => {
-            //         socket.emit('tweet', { profilePicUrl, text })
-            //     }, 1000)
-            // })
-            // queue.shift();
-
-            // setInterval(() => {
-            // }, 1000)
+            console.log('allTweets length', allTweets.length)
 
             // socket.emit('tweet', json)
-        } catch (error) {
 
-        }
     })
-    setInterval(async function () {
-        // every 1000ms take the oldest tweet of the array a send it to me
-    
+    const interval = setInterval(async function () {
         let nextTweet = allTweets.shift();
         if (nextTweet) {
             const text = nextTweet.data.text;

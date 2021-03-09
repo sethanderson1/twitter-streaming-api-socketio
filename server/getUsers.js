@@ -21,7 +21,7 @@ const endpointURL = "https://api.twitter.com/2/users"
 
 async function getUsers(id,cont) {
     console.log('getUsers ran')
-    console.log('cont in fetchProfilePic', cont)
+    console.log('cont in getUsers', cont)
 
     // These are the parameters for the API request
     // specify User names to fetch, and any additional fields that are required
@@ -46,6 +46,7 @@ async function getUsers(id,cont) {
     })
 
     if (res.body) {
+        console.log('res.body', res.body)
         console.log(`res.body.data[0] for ${cont}`, res.body.data[0])
         return res.body;
     } else {
