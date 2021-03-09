@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Tweet Stream</title>
+</head>
+
+<body>
+    <h1>Hello</h1>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.2/socket.io.js"
+        integrity="sha512-YybopSVjZU0fe8TY4YDuQbP5bhwpGBE/T6eBUEZ0usM72IWBfWrgVI13qfX4V2A/W7Hdqnm7PIOYOwP9YHnICw=="
+        crossorigin="anonymous">
+        </script>
+
+    <script>
+        const socket = io()
+
+        socket.on('connect', () => {
+            console.log('connected to server...')
+        })
+
+        socket.on('tweet', (tweet) => {
+            console.log('tweet', tweet)
+            
+        })
+    </script>
+
+
+    <img src={'https://pbs.twimg.com/profile_images/1368769596346441728/y329M0ev_normal.jpg'} />
+</body>
+
+</html>
