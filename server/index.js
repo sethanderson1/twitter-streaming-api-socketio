@@ -23,10 +23,14 @@ app.get('/', (req, res) => {
     res.sendFile(path.resolve(__dirname, '../', 'client', 'index.html'))
 })
 
+app.get('/index.css', function(req, res) {
+    res.sendFile(path.resolve(__dirname, '../', 'client', 'index.css'))
+  });
+
 const rulesURL = `https://api.twitter.com/2/tweets/search/stream/rules`;
 const streamURL = `https://api.twitter.com/2/tweets/search/stream?tweet.fields=public_metrics&expansions=author_id`;
 
-const rules = [{ value: `i love` }];
+const rules = [{ value: `wtf` }];
 
 // get stream rules
 async function getRules() {

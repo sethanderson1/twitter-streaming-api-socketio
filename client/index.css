@@ -1,0 +1,18 @@
+#tweetStream {
+    font-family: 'Roboto', sans-serif;
+}
+
+#tweetContainer {
+}
+
+.tweetContainer {
+    display: flex;
+}
+
+p {
+    width: 30%;
+    font-size: 1.4rem;
+    font-family: 'Roboto', sans-serif;
+    margin: 0 auto;
+    align-self: center;
+}

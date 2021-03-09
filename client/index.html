@@ -5,13 +5,20 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="index.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
     <title>Real-Time Tweet Stream</title>
 </head>
 
 <body>
-    <h1>Hello</h1>
+    <h1>Real-Time Tweet Stream</h1>
+    <div>
 
-    <div id="tweetStream"></div>
+        <div id="tweetStream">
+            <div id="dummyForScroll"></div>
+        </div>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.2/socket.io.js"
         integrity="sha512-YybopSVjZU0fe8TY4YDuQbP5bhwpGBE/T6eBUEZ0usM72IWBfWrgVI13qfX4V2A/W7Hdqnm7PIOYOwP9YHnICw=="
@@ -29,15 +36,25 @@
         //     console.log('tweet', tweet)
 
         // })
-
+        let i = 0;
         socket.on('tweet', ({ profilePicUrl, text }) => {
-            console.log('text',text)
-            console.log('profilePicUrl from index.html', profilePicUrl)
-            const tweetStream = document.getElementById("tweetStream");
 
+            const tweetContainer = document.createElement('div');
+            document.getElementById('tweetStream').appendChild(tweetContainer)
+            tweetContainer.setAttribute('id', `tweetContainer-${i}`);
+            tweetContainer.setAttribute('class', `tweetContainer`);
+
+            // const tweetStream = document.getElementById("tweetStream");
             const tweetElImg = document.createElement('img');
             tweetElImg.src = profilePicUrl;
-            document.getElementById('tweetStream').appendChild(tweetElImg);
+            document.getElementById(`tweetContainer-${i}`).appendChild(tweetElImg);
+
+
+            const tweetElText = document.createElement('p');
+            tweetElText.innerHTML = text;
+            document.getElementById(`tweetContainer-${i}`).appendChild(tweetElText);
+
+            i++;
         })
     </script>
 
