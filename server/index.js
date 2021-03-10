@@ -1,22 +1,31 @@
 const http = require('http');
 const path = require('path');
+const socketio = require('socket.io')
 const express = require('express');
-const socketio = require('socket.io');
-const needle = require('needle');
+const cors = require('cors')
 const config = require('dotenv').config();
 const TOKEN = process.env.TWITTER_BEARER_TOKEN;
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8000;
 
 const getUsers = require('./getUsers');
+const getMedia = require('./getMedia');
 
 let count = 0;
-let cnt = 0;
 let cont = 0;
 
 const app = express();
 
+app.use(cors())
+
 const server = http.createServer(app);
-const io = socketio(server);
+const needle = require('needle');
+const io = socketio(server, {
+    cors: {
+        origin: "*",
+        // origin: "http://localhost:3000",
+        methods: ["GET", "POST"]
+    }
+})
 
 const tweetQueue = [];
 
@@ -88,31 +97,14 @@ async function deleteRules(rules) {
     return response.body
 }
 
-async function fetchProfilePic(id) {
-    cnt = cnt + 1;
-    console.log('cnt in fetchProfilePic', cnt)
-    try {
-        console.log('fetchProfilePic ran')
-        cont = cont + 1;
-        const response = await getUsers(id, cont);
-
-        const profilePicUrl = response.data[0].profile_image_url.replace('_normal', '');
-        // console.log('profilePicUrl from getUsers', profilePicUrl)
-
-        return profilePicUrl;
-    } catch (e) {
-        console.log(e);
-        // process.exit(-1);
-    }
-    // process.exit();
-}
-
 function streamTweets(socket) {
     console.log('streamTweets ran')
 
     const stream = needle.get(streamURL, {
         headers: {
-            Authorization: `Bearer ${TOKEN}`
+            Authorization: `Bearer ${TOKEN}`,
+            // "Access-Control-Allow-Origin": "http://localhost:3000"
+            // "Access-Control-Allow-Origin": "*"
         }
     })
 
@@ -151,6 +143,8 @@ function streamTweets(socket) {
     const interval = setInterval(async function () {
         let nextTweet = tweetQueue.shift();
         if (nextTweet) {
+            const payload = {}
+            const url = `https://api.twitter.com/2/tweets?ids=1263145271946551300&expansions=attachments.media_keys&media.fields=duration_ms,height,media_key,preview_image_url,public_metrics,type,url,width`
             const text = nextTweet.data.text;
             console.log('text', text)
             // const tweetId = nextTweet.data.id;
@@ -159,30 +153,43 @@ function streamTweets(socket) {
             // console.log('tweetObj', tweetObj)
 
             const media = nextTweet.includes?.media
-            console.log('media', media)
+            console.log('media_key:', media?.[0].media_key)
+            // console.log('media', media)
 
             const media_keys = nextTweet.data.attachments?.media_keys
             console.log('media_keys', media_keys)
 
-            // Await a fetch to get user object with the profile
-            // pic and then send it to client 
+            // const tweetId = nextTweet.data.id;
             const userId = nextTweet.data.author_id;
-            const profilePicUrl = await getProfilePicUrl(userId);
-            socket.emit("tweet", { profilePicUrl, text });
+            try {
+                const profilePicUrl = await getProfilePicUrl(userId);
+                // const mediaObj = await getMedia(tweetId);
+                // console.log('mediaObj', mediaObj)
+                // console.log('mediaObj?.data?.[0]?attachments', mediaObj?.data?.[0]?.attachments)
+                // // console.log('mediaObj.includes?.media?.[0]', mediaObj?.includes?.media?.[0])
+                // // console.log('mediaObj.includes?.media?.[0]?.url', mediaObj?.includes?.media?.[0]?.url)
+                // const mediaUrl = mediaObj.includes?.media?.[0]?.url;
+                // console.log('mediaUrl', mediaUrl)
+                payload.text = text;
+                payload.profilePicUrl = profilePicUrl;
+                socket.emit("tweet", payload);
+            } catch (error) {
+                console.log('error', error)
+            }
 
             // socket.emit("tweet", {  text });
         }
     }, 1000);
 }
 
-const getTweetObj = async (tweetId) => {
-
-}
-
 const getProfilePicUrl = async (userId) => {
-    const profilePicUrl = await fetchProfilePic(userId);
-    console.log('profilePicUrl', profilePicUrl)
-    return profilePicUrl;
+    try {
+        const response = await getUsers(userId, cont);
+        const profilePicUrl = response.data[0].profile_image_url.replace('_normal', '');
+        return profilePicUrl;
+    } catch (error) {
+        console.log('error', error)
+    }
 }
 
 io.on('connection', async () => {

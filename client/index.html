@@ -36,7 +36,11 @@
 
         // })
         let i = 0;
-        socket.on('tweet', ({ profilePicUrl, text }) => {
+        socket.on('tweet', ({ profilePicUrl, text,
+            //  mediaUrl
+         }) => {
+            // console.log('mediaUrl',mediaUrl)
+            console.log('profilePicUrl', profilePicUrl)
 
             const tweetContainer = document.createElement('div');
             document.getElementById('tweetStream').appendChild(tweetContainer)
@@ -50,15 +54,18 @@
             document.getElementById(`tweetContainer-${i}`).appendChild(tweetElImg);
             // document.getElementById(`tweetContainer-${i}`).prepend(tweetElImg);
 
-
+            
             const tweetElText = document.createElement('p');
             tweetElText.innerHTML = text;
             document.getElementById(`tweetContainer-${i}`).appendChild(tweetElText);
             // document.getElementById(`tweetContainer-${i}`).prepend(tweetElText);
-
+            
             // document.getElementById('dummyForScroll').scrollIntoView();
             // document.getElementById(`tweetContainer-${i}`).scrollIntoView();
-
+            
+            // const tweetElMedia = document.createElement('img');
+            // tweetElImg.src = profilePicUrl;
+            // document.getElementById(`tweetContainer-${i}`).appendChild(tweetElMedia);
             i++;
         })
     </script>
