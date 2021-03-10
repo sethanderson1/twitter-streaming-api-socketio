@@ -8,7 +8,6 @@ const TOKEN = process.env.TWITTER_BEARER_TOKEN;
 const PORT = process.env.PORT || 3000;
 
 const getUsers = require('./getUsers');
-// console.log('getUsers', getUsers)
 
 let count = 0;
 let cnt = 0;
@@ -19,6 +18,8 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
+const tweetQueue = [];
+
 app.get('/', (req, res) => {
     res.sendFile(path.resolve(__dirname, '../', 'client', 'index.html'))
 })
@@ -28,7 +29,7 @@ app.get('/index.css', function (req, res) {
 });
 
 const rulesURL = `https://api.twitter.com/2/tweets/search/stream/rules`;
-const streamURL = `https://api.twitter.com/2/tweets/search/stream?tweet.fields=public_metrics&expansions=author_id`;
+const streamURL = `https://api.twitter.com/2/tweets/search/stream?tweet.fields=public_metrics&expansions=attachments.media_keys,author_id`;
 
 const rules = [{ value: `lol` }];
 
@@ -83,7 +84,7 @@ async function deleteRules(rules) {
         }
     })
 
-    console.log('deleteRules response.body', response.body)
+    // console.log('deleteRules response.body', response.body)
     return response.body
 }
 
@@ -94,13 +95,7 @@ async function fetchProfilePic(id) {
         console.log('fetchProfilePic ran')
         cont = cont + 1;
         const response = await getUsers(id, cont);
-        // console.dir('response console dir', response, {
-        //     depth: null,
-        //     colors: true
-        // });
 
-        // TODO: check make sure have a response and type is correct before 
-        // seeing what's in response.data[0]
         const profilePicUrl = response.data[0].profile_image_url.replace('_normal', '');
         // console.log('profilePicUrl from getUsers', profilePicUrl)
 
@@ -112,9 +107,7 @@ async function fetchProfilePic(id) {
     // process.exit();
 }
 
-const allTweets = [];
 function streamTweets(socket) {
-    console.log('socket', socket)
     console.log('streamTweets ran')
 
     const stream = needle.get(streamURL, {
@@ -127,7 +120,20 @@ function streamTweets(socket) {
         count = count + 1;
         console.log('count in stream.on', count)
 
-        if ( allTweets.length >= 15) {
+        // console.log('data', data)
+        // console.log('JSON.stringify(data', JSON.stringify(data));
+
+        // const buf = Buffer.from(JSON.stringify(data));
+        // const json = JSON.parse(buf.toString());
+
+        const json = JSON.parse(data);
+        console.log('json', json)
+        // console.log('json.includes.users', json.includes.users)
+        // queue the incoming tweets
+        tweetQueue.push(json)
+        console.log('tweetQueue length', tweetQueue.length)
+
+        if (tweetQueue.length >= 15) {
             stream.pause();
             console.log('There will be no additional data for  seconds.');
             setTimeout(() => {
@@ -135,64 +141,63 @@ function streamTweets(socket) {
                 stream.resume();
             }, 10000);
         }
-        
-            const json = JSON.parse(data);
-            console.log('json', json)
-            allTweets.push(json)
-            console.log('allTweets length', allTweets.length)
 
-            // socket.emit('tweet', json)
+
+
+        // socket.emit('tweet', json)
 
     })
+
     const interval = setInterval(async function () {
-        let nextTweet = allTweets.shift();
+        let nextTweet = tweetQueue.shift();
         if (nextTweet) {
             const text = nextTweet.data.text;
             console.log('text', text)
+            // const tweetId = nextTweet.data.id;
+            // fetch tweet object
+            // const tweetObj = await getTweetObj(tweetId);
+            // console.log('tweetObj', tweetObj)
+
+            const media = nextTweet.includes?.media
+            console.log('media', media)
+
+            const media_keys = nextTweet.data.attachments?.media_keys
+            console.log('media_keys', media_keys)
+
             // Await a fetch to get user object with the profile
             // pic and then send it to client 
-            const id = nextTweet.data.author_id;
-            const profilePicUrl = await fetchProfilePic(id);
+            const userId = nextTweet.data.author_id;
+            const profilePicUrl = await getProfilePicUrl(userId);
             socket.emit("tweet", { profilePicUrl, text });
+
+            // socket.emit("tweet", {  text });
         }
     }, 1000);
 }
 
+const getTweetObj = async (tweetId) => {
+
+}
+
+const getProfilePicUrl = async (userId) => {
+    const profilePicUrl = await fetchProfilePic(userId);
+    console.log('profilePicUrl', profilePicUrl)
+    return profilePicUrl;
+}
 
 io.on('connection', async () => {
-    // console.log('client connected...')
+    console.log('client connected...')
     let currentRules
     try {
         currentRules = await getRules();
-        console.log('currentRules', currentRules)
+        // console.log('currentRules', currentRules)
         await deleteRules(currentRules);
         await setRules();
     } catch (error) {
         console.error('error', error);
         process.exit(1);
     }
-
     streamTweets(io);
 })
-
-
-
-
-
-// ; (async () => {
-//     let currentRules
-//     try {
-//         currentRules = await getRules();
-//         console.log('currentRules', currentRules)
-//         await deleteRules(currentRules);
-//         await setRules();
-//     } catch (error) {
-//         console.error('error', error);
-//         process.exit(1);
-//     }
-//     streamTweets(io);
-// })();
-
-
 
 server.listen(PORT, () => console.log(`listening on port: ${PORT}`))
