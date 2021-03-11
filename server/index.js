@@ -19,6 +19,8 @@ app.use(cors())
 
 const server = http.createServer(app);
 const needle = require('needle');
+// const streamTweets = require('./streamTweets');
+
 const io = socketio(server, {
     cors: {
         origin: "*",
@@ -40,7 +42,9 @@ app.get('/index.css', function (req, res) {
 const rulesURL = `https://api.twitter.com/2/tweets/search/stream/rules`;
 const streamURL = `https://api.twitter.com/2/tweets/search/stream?tweet.fields=public_metrics&expansions=attachments.media_keys,author_id`;
 
-const rules = [{ value: `lol` }];
+const searchTerm = `trump`;
+
+const rules = [{ value: searchTerm }];
 
 // get stream rules
 async function getRules() {
