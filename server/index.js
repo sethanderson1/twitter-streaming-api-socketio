@@ -122,27 +122,35 @@ function streamTweets(socket) {
         // const buf = Buffer.from(JSON.stringify(data));
         // const json = JSON.parse(buf.toString());
 
-        const json = JSON.parse(data);
+        console.log('data', data[0])
+        console.log('data.toString()', data.toString().length)
+        let json;
+        if (data.toString().length > 2 && data[0] !== undefined) {
+            console.log('data', data)
+            json = JSON.parse(data);
+        }
         console.log('json', json)
         // console.log('json.includes.users', json.includes.users)
         // queue the incoming tweets
         tweetQueue.push(json)
         console.log('tweetQueue length', tweetQueue.length)
 
-        if (tweetQueue.length >= 15) {
-            stream.pause();
-            console.log('There will be no additional data for  seconds.');
-            setTimeout(() => {
-                console.log('Now data will start flowing again.');
-                stream.resume();
-            }, 10000);
-        }
+        // if (tweetQueue.length >= 15) {
+        //     stream.pause();
+        //     console.log('There will be no additional data for  seconds.');
+        //     setTimeout(() => {
+        //         console.log('Now data will start flowing again.');
+        //         stream.resume();
+        //     }, 10000);
+        // }
 
 
 
         // socket.emit('tweet', json)
 
     })
+
+    const newTweetInterval = 0;
 
     const interval = setInterval(async function () {
         let nextTweet = tweetQueue.shift();
@@ -166,7 +174,6 @@ function streamTweets(socket) {
             // const tweetId = nextTweet.data.id;
             const userId = nextTweet.data.author_id;
             try {
-                const profilePicUrl = await getProfilePicUrl(userId);
                 // const mediaObj = await getMedia(tweetId);
                 // console.log('mediaObj', mediaObj)
                 // console.log('mediaObj?.data?.[0]?attachments', mediaObj?.data?.[0]?.attachments)
@@ -175,7 +182,8 @@ function streamTweets(socket) {
                 // const mediaUrl = mediaObj.includes?.media?.[0]?.url;
                 // console.log('mediaUrl', mediaUrl)
                 payload.text = text;
-                payload.profilePicUrl = profilePicUrl;
+                // const profilePicUrl = await getProfilePicUrl(userId);
+                // payload.profilePicUrl = profilePicUrl;
                 socket.emit("tweet", payload);
             } catch (error) {
                 console.log('error', error)
@@ -183,13 +191,13 @@ function streamTweets(socket) {
 
             // socket.emit("tweet", {  text });
         }
-    }, 1000);
+    }, newTweetInterval);
 }
 
 const getProfilePicUrl = async (userId) => {
     try {
         const response = await getUsers(userId, cont);
-        const profilePicUrl = response.data[0].profile_image_url.replace('_normal', '');
+        const profilePicUrl = response?.data?.[0]?.profile_image_url.replace('_normal', '');
         return profilePicUrl;
     } catch (error) {
         console.log('error', error)
