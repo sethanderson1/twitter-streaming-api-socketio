@@ -32,7 +32,6 @@ const io = socketio(server, {
 // });
 
 const rulesURL = `https://api.twitter.com/2/tweets/search/stream/rules`;
-const streamURL = `https://api.twitter.com/2/tweets/search/stream?tweet.fields=public_metrics&expansions=attachments.media_keys,author_id`;
 
 const searchTerm = `lol`;
 
@@ -103,13 +102,11 @@ async function deleteRules(rules) {
 //     }
 // }
 
-
 io.on('connection', async () => {
     console.log('client connected...')
-    let currentRules
+    let currentRules;
     try {
         currentRules = await getRules();
-        // console.log('currentRules', currentRules)
         await deleteRules(currentRules);
         await setRules();
     } catch (error) {
