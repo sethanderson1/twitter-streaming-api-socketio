@@ -5,7 +5,6 @@ const express = require('express');
 const cors = require('cors')
 const config = require('dotenv').config();
 const TOKEN = process.env.TWITTER_BEARER_TOKEN;
-let cont = 0;
 
 const app = express();
 
@@ -14,6 +13,7 @@ app.use(cors());
 const server = http.createServer(app);
 const needle = require('needle');
 const streamTweets = require('./streamTweets');
+const termList = require('../config/termList');
 
 const io = socketio(server, {
     cors: {
@@ -23,17 +23,14 @@ const io = socketio(server, {
     }
 })
 
-// app.get('/', (req, res) => {
-//     res.sendFile(path.resolve(__dirname, '../', 'client', 'index.html'))
-// })
 
-// app.get('/index.css', function (req, res) {
-//     res.sendFile(path.resolve(__dirname, '../', 'client', 'index.css'))
-// });
 
 const rulesURL = `https://api.twitter.com/2/tweets/search/stream/rules`;
 
-const searchTerm = `lol`;
+
+
+const searchTerm = termList;
+console.log('termList', termList)
 
 const rules = [{ value: searchTerm }];
 
@@ -92,23 +89,13 @@ async function deleteRules(rules) {
     return response.body
 }
 
-// const getProfilePicUrl = async (userId) => {
-//     try {
-//         const response = await getUsers(userId, cont);
-//         const profilePicUrl = response?.data?.[0]?.profile_image_url.replace('_normal', '');
-//         return profilePicUrl;
-//     } catch (error) {
-//         console.log('error', error)
-//     }
-// }
-
 io.on('connection', async () => {
     console.log('client connected...')
     let currentRules;
     try {
         currentRules = await getRules();
         await deleteRules(currentRules);
-        await setRules();
+        const dummy = await setRules();
     } catch (error) {
         console.error('error', error);
         process.exit(1);
