@@ -6,11 +6,32 @@ const express = require('express');
 const cors = require('cors')
 const config = require('dotenv').config();
 const TOKEN = process.env.TWITTER_BEARER_TOKEN;
+const Tweet = require('../models/tweet');
 
 const app = express();
 
-
 app.use(cors());
+
+app.get('/add-tweet', (req, res) => {
+    const tweet = new Tweet({
+        text: '@FortTory He still has his watch on TEST TEST TEST lmao',
+        author_id: '1218283544797163523',
+        id: '1371681086766518281',
+    })
+
+    tweet.save()
+        .then((result) => {
+            console.log('result', result)
+            res.send(result)
+        })
+        .catch((err) => {
+            console.log('err', err)
+        })
+})
+
+// app.get('/getbyid', (req, res) => {
+//     Tweet.
+// })
 
 const server = http.createServer(app);
 const needle = require('needle');
