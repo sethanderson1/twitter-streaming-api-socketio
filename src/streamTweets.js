@@ -40,7 +40,9 @@ function streamTweets(socket) {
         let json;
         // console.log('data', data)
         if (data.toString().length > 2 && data[0] !== undefined) {
+            console.log('data', data)
             json = JSON.parse(data);
+            console.log('json', json)
             // filter out retweets
             if (!json.data.text.startsWith('RT')) {
                 const hasTermObj = analyzeText(json.data.text)
@@ -59,13 +61,13 @@ function streamTweets(socket) {
         
         // console.log('tweetQueue length', tweetQueue.length)
         
-        if (tweetQueue.length >= 100) {
+        if (tweetQueue.length >= 20) {
             stream.pause();
             console.log('There will be no additional data for  seconds.');
             setTimeout(() => {
                 console.log('Now data will start flowing again.');
                 stream.resume();
-            }, 10000);
+            }, 5000);
         }
         
     })
@@ -77,13 +79,14 @@ function streamTweets(socket) {
         // }, 4000)
         
         
-        const newTweetInterval = 5000;
+        const newTweetInterval = 20;
         let cont = 0;
 
         const interval = setInterval(async function () {
             let nextTweet = tweetQueue.shift();
-            console.log('nextTweet', nextTweet)
             if (nextTweet) {
+                // console.log('nextTweet', nextTweet)
+                // console.log('nextTweet', nextTweet.includes.users[0])
                 const payload = {}
                 // const url = `https://api.twitter.com/2/tweets?ids=1263145271946551300&expansions=attachments.media_keys&media.fields=duration_ms,height,media_key,preview_image_url,public_metrics,type,url,width`
                 const text = nextTweet?.data?.text;

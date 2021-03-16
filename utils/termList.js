@@ -3,7 +3,18 @@
 
 const tempTermList = []
 
-const terms = ["lol", "wtf", "omg"]
+const terms = [
+    "lol",
+    "lmao",
+    "ffs",
+    "lmfao",
+    "rofl",
+    "omg",
+    "wtf",
+    "stfu",
+    "ffs",
+    "fml",
+]
 
 terms.forEach(term => {
     tempTermList.push(`"${term}"`)
