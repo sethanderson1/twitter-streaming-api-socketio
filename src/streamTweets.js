@@ -2,6 +2,7 @@ const needle = require('needle');
 const TOKEN = process.env.TWITTER_BEARER_TOKEN;
 const getUsers = require('./getUsers')
 const analyzeText = require('../utils/analyzeText')
+const { terms } = require('../utils/termList')
 let count = 0;
 let tweetCount = 0;
 let tweetsPerMin = 0;
@@ -12,28 +13,28 @@ const streamURL = `https://api.twitter.com/2/tweets/search/stream?tweet.fields=p
 
 function streamTweets(socket) {
     console.log('streamTweets ran')
-
+    
     const stream = needle.get(streamURL, {
         headers: {
             Authorization: `Bearer ${TOKEN}`,
         }
     })
-
+    
     // TODO: see if re adding the slow down functions breaks stream again
-
+    
     stream.on('data', async (data) => {
         count = count + 1;
         console.log('count in stream.on', count)
-
-
-
-
+        
+        
+        
+        
         // console.log('data', data)
         // console.log('JSON.stringify(data', JSON.stringify(data));
-
+        
         // const buf = Buffer.from(JSON.stringify(data));
         // const json = JSON.parse(buf.toString());
-
+        
         // console.log('data', data[0])
         // console.log('data.toString()', data.toString().length)
         let json;
@@ -52,12 +53,12 @@ function streamTweets(socket) {
             }
         }
         // console.log('json', json)
-
+        
         // console.log('json', json)
         // queue the incoming tweets
-
+        
         // console.log('tweetQueue length', tweetQueue.length)
-
+        
         if (tweetQueue.length >= 100) {
             stream.pause();
             console.log('There will be no additional data for  seconds.');
@@ -66,47 +67,47 @@ function streamTweets(socket) {
                 stream.resume();
             }, 10000);
         }
-
+        
     })
-
+    
     // setInterval(() => {
-    //     tweetsPerMin = tweetCount * 15;
-    //     console.log('tweetsPerMin', tweetsPerMin)
-    //     tweetCount = 0
-    // }, 4000)
+        //     tweetsPerMin = tweetCount * 15;
+        //     console.log('tweetsPerMin', tweetsPerMin)
+        //     tweetCount = 0
+        // }, 4000)
+        
+        
+        const newTweetInterval = 5000;
+        let cont = 0;
 
-
-    const newTweetInterval = 5000;
-    let cont = 0;
-
-    const interval = setInterval(async function () {
-        let nextTweet = tweetQueue.shift();
-        console.log('nextTweet', nextTweet)
-        if (nextTweet) {
-            const payload = {}
-            // const url = `https://api.twitter.com/2/tweets?ids=1263145271946551300&expansions=attachments.media_keys&media.fields=duration_ms,height,media_key,preview_image_url,public_metrics,type,url,width`
-            const text = nextTweet?.data?.text;
-            // console.log('text', text)
-            // const tweetId = nextTweet.data.id;
-            // fetch tweet object
-            // const tweetObj = await getTweetObj(tweetId);
-            // console.log('tweetObj', tweetObj)
-
-            // const media = nextTweet.includes?.media
-            // console.log('media_key:', media?.[0].media_key)
-            // // console.log('media', media)
-
-            // const media_keys = nextTweet.data.attachments?.media_keys
-            // console.log('media_keys', media_keys)
-
-            // const tweetId = nextTweet.data.id;
-            const userId = nextTweet.data.author_id;
-            try {
-                // const mediaObj = await getMedia(tweetId);
-                // console.log('mediaObj', mediaObj)
-                // console.log('mediaObj?.data?.[0]?attachments', mediaObj?.data?.[0]?.attachments)
-                // // console.log('mediaObj.includes?.media?.[0]', mediaObj?.includes?.media?.[0])
-                // // console.log('mediaObj.includes?.media?.[0]?.url', mediaObj?.includes?.media?.[0]?.url)
+        const interval = setInterval(async function () {
+            let nextTweet = tweetQueue.shift();
+            console.log('nextTweet', nextTweet)
+            if (nextTweet) {
+                const payload = {}
+                // const url = `https://api.twitter.com/2/tweets?ids=1263145271946551300&expansions=attachments.media_keys&media.fields=duration_ms,height,media_key,preview_image_url,public_metrics,type,url,width`
+                const text = nextTweet?.data?.text;
+                // console.log('text', text)
+                // const tweetId = nextTweet.data.id;
+                // fetch tweet object
+                // const tweetObj = await getTweetObj(tweetId);
+                // console.log('tweetObj', tweetObj)
+                
+                // const media = nextTweet.includes?.media
+                // console.log('media_key:', media?.[0].media_key)
+                // // console.log('media', media)
+                
+                // const media_keys = nextTweet.data.attachments?.media_keys
+                // console.log('media_keys', media_keys)
+                
+                // const tweetId = nextTweet.data.id;
+                const userId = nextTweet.data.author_id;
+                try {
+                    // const mediaObj = await getMedia(tweetId);
+                    // console.log('mediaObj', mediaObj)
+                    // console.log('mediaObj?.data?.[0]?attachments', mediaObj?.data?.[0]?.attachments)
+                    // // console.log('mediaObj.includes?.media?.[0]', mediaObj?.includes?.media?.[0])
+                    // // console.log('mediaObj.includes?.media?.[0]?.url', mediaObj?.includes?.media?.[0]?.url)
                 // const mediaUrl = mediaObj.includes?.media?.[0]?.url;
                 // console.log('mediaUrl', mediaUrl)
                 payload.text = text;
@@ -127,6 +128,11 @@ function streamTweets(socket) {
                 payload.profilePicUrl = profilePicUrl;
                 // payload.tweetsPerMin = tweetsPerMin;
 
+                const hasTermObj = nextTweet.data.hasTermObj;
+                payload.hasTermObj = hasTermObj;
+
+                payload.terms = terms;
+                
                 socket.emit("tweet", payload);
             } catch (error) {
                 console.log('error', error)

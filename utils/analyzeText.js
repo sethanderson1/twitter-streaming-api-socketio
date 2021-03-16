@@ -9,8 +9,8 @@ const analyzeText = (text) => {
         }
     }
     
-    console.log('text', text)
-    console.log('hasTermObj', hasTermObj)
+    // console.log('text', text)
+    // console.log('hasTermObj', hasTermObj)
     return hasTermObj;
 }
 
