@@ -3,7 +3,7 @@
 
 const tempTermList = []
 
-const terms = ["trump"]
+const terms = ["lol", "wtf", "omg"]
 
 terms.forEach(term => {
     tempTermList.push(`"${term}"`)
@@ -11,4 +11,7 @@ terms.forEach(term => {
 
 const termList = tempTermList.join(' OR ')
 
-module.exports = termList;
+module.exports = {
+    terms,
+    termList
+}

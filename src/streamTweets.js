@@ -1,6 +1,7 @@
 const needle = require('needle');
 const TOKEN = process.env.TWITTER_BEARER_TOKEN;
 const getUsers = require('./getUsers')
+const analyzeText = require('../utils/analyzeText')
 let count = 0;
 let tweetCount = 0;
 let tweetsPerMin = 0;
@@ -23,7 +24,7 @@ function streamTweets(socket) {
     stream.on('data', async (data) => {
         count = count + 1;
         console.log('count in stream.on', count)
-        
+
 
 
 
@@ -36,15 +37,18 @@ function streamTweets(socket) {
         // console.log('data', data[0])
         // console.log('data.toString()', data.toString().length)
         let json;
-        console.log('data', data)
+        // console.log('data', data)
         if (data.toString().length > 2 && data[0] !== undefined) {
             json = JSON.parse(data);
             // filter out retweets
             if (!json.data.text.startsWith('RT')) {
+                const hasTermObj = analyzeText(json.data.text)
+                json.data.hasTermObj = hasTermObj;
                 tweetQueue.push(json)
                 tweetCount++
                 console.log('tweetCount', tweetCount)
-                console.log('tweetQueue', tweetQueue)
+                
+                // console.log('tweetQueue', tweetQueue)
             }
         }
         // console.log('json', json)
@@ -54,7 +58,7 @@ function streamTweets(socket) {
 
         // console.log('tweetQueue length', tweetQueue.length)
 
-        if (tweetQueue.length >= 15) {
+        if (tweetQueue.length >= 100) {
             stream.pause();
             console.log('There will be no additional data for  seconds.');
             setTimeout(() => {
@@ -77,6 +81,7 @@ function streamTweets(socket) {
 
     const interval = setInterval(async function () {
         let nextTweet = tweetQueue.shift();
+        console.log('nextTweet', nextTweet)
         if (nextTweet) {
             const payload = {}
             // const url = `https://api.twitter.com/2/tweets?ids=1263145271946551300&expansions=attachments.media_keys&media.fields=duration_ms,height,media_key,preview_image_url,public_metrics,type,url,width`

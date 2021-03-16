@@ -13,7 +13,7 @@ app.use(cors());
 const server = http.createServer(app);
 const needle = require('needle');
 const streamTweets = require('./streamTweets');
-const termList = require('../config/termList');
+const { termList, terms } = require('../utils/termList');
 
 const io = socketio(server, {
     cors: {
