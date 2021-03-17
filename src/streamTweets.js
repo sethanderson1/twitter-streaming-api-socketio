@@ -9,7 +9,8 @@ let count = 0;
 let tweetCount = 0;
 let tweetsPerMin = 0;
 const tweetQueue = [];
-const streamURL = `https://api.twitter.com/2/tweets/search/stream?tweet.fields=public_metrics&expansions=attachments.media_keys,author_id`;
+const streamURL = `https://api.twitter.com/2/tweets/search/stream?tweet.fields=public_metrics&expansions=attachments.media_keys,author_id,geo.place_id`;
+// const streamURL = `https://api.twitter.com/2/tweets/search/stream?tweet.fields=public_metrics&expansions=attachments.media_keys,author_id`;
 
 
 
@@ -41,10 +42,15 @@ function streamTweets(socket) {
         // console.log('data.toString()', data.toString().length)
         let json;
         // console.log('data', data)
+        console.log('data', data)
         if (data.toString().length > 2 && data[0] !== undefined) {
-            console.log('data', data)
+            // console.log('data', data)
             json = JSON.parse(data);
             console.log('json', json)
+            if (json.data.geo) {
+                // console.log('json.data.geo', json.data.geo)
+                // console.log('json', json)
+            }
             // filter out retweets
             if (!json.data.text.startsWith('RT')) {
                 const hasTermObj = analyzeText(json.data.text)
@@ -55,20 +61,20 @@ function streamTweets(socket) {
 
 
 
-                const tweet = new Tweet({
-                    text: json.data.text,
-                    author_id: json.data.author_id,
-                    id: json.data.id,
-                })
+                // const tweet = new Tweet({
+                //     text: json.data.text,
+                //     author_id: json.data.author_id,
+                //     id: json.data.id,
+                // })
 
-                tweet.save()
-                    .then((result) => {
-                        console.log('result', result)
-                        // res.send(result)
-                    })
-                    .catch((err) => {
-                        console.log('err', err)
-                    })
+                // tweet.save()
+                //     .then((result) => {
+                //         console.log('result', result)
+                //         // res.send(result)
+                //     })
+                //     .catch((err) => {
+                //         console.log('err', err)
+                //     })
 
 
 

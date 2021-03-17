@@ -50,12 +50,58 @@ const io = socketio(server, {
 
 const rulesURL = `https://api.twitter.com/2/tweets/search/stream/rules`;
 
-
+// point_radius:[-41.287336 174.761070 20mi]
 
 const searchTerm = termList;
 console.log('termList', termList)
 
-const rules = [{ value: searchTerm }];
+const rules = [
+    // { value: '(social OR data) (academic OR research OR "social media research") point_radius:[-105.27346517 40.01924738 10.0mi] lang:en -personality -information -university' },
+    // { value: 'lol point_radius:[-73.935242 40.730610 20mi]' },
+    // { value: '(lol) point_radius:[-73.935242 40.730610 20mi]' },
+    // { value: '(lol OR hello) point_radius:[-73.935242 40.730610 20mi]' },
+    // { value: '(lol) point_radius:[40.740392 -73.995039 20mi]' },
+    // { value: '(lol OR lmao) point_radius:[-105.27346517 40.01924738 10.0mi]' },
+    // { value: '(lol OR lmao)' },
+    // { value: "lol (place_country:US)" },
+    // { value: "lol (lang:en)" },
+    // { value: 'lol (-74,40,-73,41)' },
+    // { value: 'locations=["-122.75,36.8,-121.75,37.8"]' },
+    // { value: 'locations:-122.75,36.8,-121.75,37.8' },
+    // { value: '(locations:-122.75,36.8,-121.75,37.8)' },
+    // { value: '(-122.75,36.8,-121.75,37.8)' },
+    // { value: 'location:(-122.75,36.8,-121.75,37.8)' },
+    // { value: 'location= [-122.75,36.8,-121.75,37.8]' },
+    // { value: 'locations=(-74,40,-73,41)' },
+    // { value: 'locations=(-74,40,-73,41)' },
+    // { value: 'lol (has:media)' },
+    // { value: '(lol OR lmao) (point_radius:[-105.27346517 40.01924738 10.0mi])' },
+    // { value: '(lol OR lmao) (point_radius:[-105.27346517 40.01924738 10.0mi])' },
+    // { value: '(lol OR lmao) place:London' },
+    // { value: 'lol point_radius:[40.740392 -73.995039 20mi]' },
+    // { value: searchTerm + 'point_radius:[40.740392 -73.995039 20mi]' },
+    // { value: searchTerm },
+    // { value: 'point_radius: [174.761070 -41.287336 20mi]' }
+    // { value: 'locations=(-74,40,-73,41)' },
+    // { value: 'locations:(-74,40,-73,41)' },
+    // { value: 'locations:[-74,40,-73,41]' },
+    // { value: 'locations:[(-74,40,-73,41)]' },
+    // { value: 'locations=[(-74,40,-73,41)]' },
+    // { value: 'locations=[-74,40,-73,41]' },
+    // { value: 'locations= [-74,40,-73,41]' },
+    // { value: 'locations= ([-74,40,-73,41])' },
+    // { value: 'locations =([-74,40,-73,41])' },
+    // { value: '"locations" =([-74,40,-73,41])' },
+    // { value: '"locations"=([-74,40,-73,41])' },
+    // { value: 'locations:(-74,40,-73,41)' },
+    // { value: 'location:-74,40,-73,41' },
+    // { value: 'lang:en' },
+    // { value: 'asdf:(-74,40,-73,41)' },
+    // { locations: '74,40,-73,41' },
+    {value: 'fasdfasdf'},
+    // { locations:'74,40,-73,41' },
+
+];
 
 // get stream rules
 async function getRules() {
@@ -81,7 +127,8 @@ async function setRules() {
             Authorization: `Bearer ${TOKEN}`
         }
     })
-    // console.log('setRules response.body', response.body)
+    console.log('setRules response.body', response.body)
+    console.log('setRules response.body.errors[0]', response?.body?.errors?.[0])
     return response.body
 }
 
