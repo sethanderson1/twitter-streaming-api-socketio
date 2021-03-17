@@ -12,22 +12,22 @@ const app = express();
 
 app.use(cors());
 
-app.get('/add-tweet', (req, res) => {
-    const tweet = new Tweet({
-        text: '@FortTory He still has his watch on TEST TEST TEST lmao',
-        author_id: '1218283544797163523',
-        id: '1371681086766518281',
-    })
+// app.get('/add-tweet', (req, res) => {
+//     const tweet = new Tweet({
+//         text: '@FortTory He still has his watch on TEST TEST TEST lmao',
+//         author_id: '1218283544797163523',
+//         id: '1371681086766518281',
+//     })
 
-    tweet.save()
-        .then((result) => {
-            console.log('result', result)
-            res.send(result)
-        })
-        .catch((err) => {
-            console.log('err', err)
-        })
-})
+//     tweet.save()
+//         .then((result) => {
+//             console.log('result', result)
+//             res.send(result)
+//         })
+//         .catch((err) => {
+//             console.log('err', err)
+//         })
+// })
 
 // app.get('/getbyid', (req, res) => {
 //     Tweet.
@@ -112,18 +112,18 @@ async function deleteRules(rules) {
     return response.body
 }
 
-// io.on('connection', async () => {
-//     console.log('client connected...')
-//     let currentRules;
-//     try {
-//         currentRules = await getRules();
-//         await deleteRules(currentRules);
-//         const dummy = await setRules();
-//     } catch (error) {
-//         console.error('error', error);
-//         process.exit(1);
-//     }
-//     streamTweets(io);
-// })
+io.on('connection', async () => {
+    console.log('client connected...')
+    let currentRules;
+    try {
+        currentRules = await getRules();
+        await deleteRules(currentRules);
+        const dummy = await setRules();
+    } catch (error) {
+        console.error('error', error);
+        process.exit(1);
+    }
+    streamTweets(io);
+})
 
 module.exports = server;
