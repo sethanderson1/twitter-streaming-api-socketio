@@ -22,7 +22,7 @@ function streamTweets(socket) {
         }
     })
 
-    // TODO: see if re adding the slow down functions breaks stream again
+    // const filterConditions = [()=>{!json.data.text.startsWith('RT')}]    
 
     stream.on('data', async (data) => {
         count = count + 1;
@@ -46,7 +46,7 @@ function streamTweets(socket) {
             json = JSON.parse(data);
             console.log('json', json)
             // filter out retweets
-            if (!json.data.text.startsWith('RT')) {
+            if (!json.data.text.startsWith('RT') && !json.data.text.includes('https') && !json.data.text.includes('@')) {
                 const hasTermObj = analyzeText(json.data.text)
                 json.data.hasTermObj = hasTermObj;
                 tweetQueue.push(json)
@@ -96,7 +96,7 @@ function streamTweets(socket) {
             setTimeout(() => {
                 console.log('Now data will start flowing again.');
                 stream.resume();
-            }, 15000);
+            }, 30000);
         }
 
     })
