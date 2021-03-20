@@ -11,11 +11,12 @@ let tweetsPerMin = 0;
 const tweetQueue = [];
 const streamURL = `https://api.twitter.com/2/tweets/search/stream?tweet.fields=public_metrics&expansions=attachments.media_keys,author_id`;
 
-
+// TODO: filter by lang:en somewhere
 
 function streamTweets(socket) {
     console.log('streamTweets ran')
 
+    console.log('tweetQueue', tweetQueue)
     const stream = needle.get(streamURL, {
         headers: {
             Authorization: `Bearer ${TOKEN}`,
@@ -29,7 +30,7 @@ function streamTweets(socket) {
         console.log('count in stream.on', count)
 
 
-
+        // TODO: fix buffer causing no tweets to display when dip below 3 in buffer
 
         // console.log('data', data)
         // console.log('JSON.stringify(data', JSON.stringify(data));
@@ -46,7 +47,10 @@ function streamTweets(socket) {
             json = JSON.parse(data);
             console.log('json', json)
             // filter out retweets
-            if (!json.data.text.startsWith('RT') && !json.data.text.includes('https') && !json.data.text.includes('@')) {
+            if (!json.data.text.startsWith('RT')
+                && !json.data.text.includes('https')
+                // && !json.data.text.includes('@')
+            ) {
                 const hasTermObj = analyzeText(json.data.text)
                 json.data.hasTermObj = hasTermObj;
                 tweetQueue.push(json)
@@ -90,6 +94,7 @@ function streamTweets(socket) {
                 stream.resume();
             }, 5000);
         }
+        console.log('tweetQueue.length', tweetQueue.length)
         if (tweetQueue.length >= 100) {
             stream.pause();
             console.log('There will be no additional data for  seconds.');
@@ -108,7 +113,7 @@ function streamTweets(socket) {
     // }, 4000)
 
 
-    const newTweetInterval = 20;
+    const newTweetInterval = 1000;
     let cont = 0;
 
     const interval = setInterval(async function () {
@@ -172,7 +177,7 @@ function streamTweets(socket) {
 
             // socket.emit("tweet", {  text });
         }
-    }, newTweetInterval);
+    }, 4000);
 }
 
 module.exports = streamTweets;
