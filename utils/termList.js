@@ -4,16 +4,16 @@
 const tempTermList = []
 
 const terms = [
-    "lol",
-    "lmao",
-    "ffs",
-    "lmfao",
-    "rofl",
-    "omg",
+    // "lol",
+    // "lmao",
+    // "ffs",
+    // "lmfao",
+    // "rofl",
+    // "omg",
     "wtf",
-    "stfu",
-    "ffs",
-    "fml",
+    // "stfu",
+    // "ffs",
+    // "fml",
 ]
 
 terms.forEach(term => {

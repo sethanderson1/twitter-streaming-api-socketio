@@ -90,6 +90,14 @@ function streamTweets(socket) {
                 stream.resume();
             }, 5000);
         }
+        if (tweetQueue.length >= 100) {
+            stream.pause();
+            console.log('There will be no additional data for  seconds.');
+            setTimeout(() => {
+                console.log('Now data will start flowing again.');
+                stream.resume();
+            }, 15000);
+        }
 
     })
 
