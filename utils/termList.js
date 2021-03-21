@@ -1,6 +1,3 @@
-
-
-
 const tempTermList = []
 
 // const terms = [
@@ -17,8 +14,8 @@ const tempTermList = []
 // ]
 
 //  terms = ["I wonder"]
-//  terms = ["cuomo"]
  terms = ["idiot"]
+//  terms = ["wow"]
 
 terms.forEach(term => {
     tempTermList.push(`"${term}"`)
