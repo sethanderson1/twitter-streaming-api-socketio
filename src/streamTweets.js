@@ -55,7 +55,7 @@ function streamTweets(socket) {
                 json.data.hasTermObj = hasTermObj;
                 tweetQueue.push(json)
                 tweetCount++
-                console.log('tweetCount', tweetCount)
+                console.log('tweetCount', tweetCount) 
 
 
 
