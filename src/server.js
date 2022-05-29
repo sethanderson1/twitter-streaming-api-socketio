@@ -4,9 +4,10 @@ const mongoose = require('mongoose');
 
 // // connect to mongodb
 const dbURI = process.env.MONGODB_URI;
-mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then((result) => {
-        return server.listen(PORT, () => console.log(`listening on port: ${PORT}`))
-    })
-    .catch((err) => console.log('err', err))
+// mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
+//     .then((result) => {
+//         return server.listen(PORT, () => console.log(`listening on port: ${PORT}`))
+//     })
+//     .catch((err) => console.log('err', err))
 
+server.listen(PORT, () => console.log(`listening on port: ${PORT}`))
