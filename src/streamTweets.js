@@ -17,6 +17,7 @@ function streamTweets(socket) {
   console.log("streamTweets ran");
 
   console.log("tweetQueue", tweetQueue);
+  
   const stream = needle.get(streamURL, {
     headers: {
       Authorization: `Bearer ${TOKEN}`,
@@ -24,8 +25,7 @@ function streamTweets(socket) {
   });
 
   // const filterConditions = [()=>{!json.data.text.startsWith('RT')}]
-
-  stream.on("data", async (data) => {
+  const listener = async (data) => {
     count = count + 1;
     console.log("count in stream.on", count);
 
@@ -100,7 +100,9 @@ function streamTweets(socket) {
         stream.resume();
       }, 30000);
     }
-  });
+  };
+
+  stream.on("data", listener);
 
   // setInterval(() => {
   //     tweetsPerMin = tweetCount * 15;
@@ -143,7 +145,7 @@ function streamTweets(socket) {
         // const mediaUrl = mediaObj.includes?.media?.[0]?.url;
         // console.log('mediaUrl', mediaUrl)
         payload.text = text;
-        
+
         const getProfilePicUrl = async (userId) => {
           console.log("userId", userId);
           try {
@@ -164,7 +166,7 @@ function streamTweets(socket) {
         payload.hasTermObj = hasTermObj;
         payload.tweetId = nextTweet.data.id;
         payload.terms = terms;
-        console.log('payload', payload)
+        console.log("payload", payload);
 
         socket.emit("tweet", payload);
       } catch (error) {
