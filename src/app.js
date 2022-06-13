@@ -108,7 +108,21 @@ async function deleteRules(rules) {
     return response.body
 }
 
-io.on('connection', async () => {
+// io.on('connection', async () => {
+//     console.log('client connected...')
+//     let currentRules;
+//     try {
+//         currentRules = await getRules();
+//         await deleteRules(currentRules);
+//         const dummy = await setRules();
+//     } catch (error) {
+//         console.error('error', error);
+//         process.exit(1);
+//     }
+//     streamTweets(io);
+// })
+
+const startStreamTweets = async () => {
     console.log('client connected...')
     let currentRules;
     try {
@@ -120,6 +134,8 @@ io.on('connection', async () => {
         process.exit(1);
     }
     streamTweets(io);
-})
+}
+
+startStreamTweets();
 
 module.exports = server;
