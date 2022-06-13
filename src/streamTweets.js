@@ -27,7 +27,7 @@ function streamTweets(socket) {
 
   stream.on("data", async (data) => {
     count = count + 1;
-    console.log("count in stream.on", count);
+    // console.log("count in stream.on", count);
 
     // TODO: fix buffer causing no tweets to display when dip below 3 in buffer
 
@@ -42,9 +42,9 @@ function streamTweets(socket) {
     let json;
     // console.log('data', data)
     if (data.toString().length > 2 && data[0] !== undefined) {
-      console.log("data", data);
+      // console.log("data", data);
       json = JSON.parse(data);
-      console.log("json", json);
+      // console.log("json", json);
       // filter out retweets
       if (
         !json.data.text.startsWith("RT") &&
@@ -53,9 +53,11 @@ function streamTweets(socket) {
       ) {
         const hasTermObj = analyzeText(json.data.text);
         json.data.hasTermObj = hasTermObj;
+        const tweetText = json.data.text;
+        console.log(tweetText)
         tweetQueue.push(json);
         tweetCount++;
-        console.log("tweetCount", tweetCount);
+        // console.log("tweetCount", tweetCount);
 
         const tweet = new Tweet({
           text: json.data.text,
@@ -63,15 +65,15 @@ function streamTweets(socket) {
           id: json.data.id,
         });
 
-        tweet
-          .save()
-          .then((result) => {
-            console.log("result", result);
-            // res.send(result)
-          })
-          .catch((err) => {
-            console.log("err", err);
-          });
+        // tweet
+        //   .save()
+        //   .then((result) => {
+        //     console.log("result", result);
+        //     // res.send(result)
+        //   })
+        //   .catch((err) => {
+        //     console.log("err", err);
+        //   });
 
         // console.log('tweetQueue', tweetQueue)
       }
@@ -87,16 +89,16 @@ function streamTweets(socket) {
       stream.pause();
       console.log("There will be no additional data for  seconds.");
       setTimeout(() => {
-        console.log("Now data will start flowing again.");
+        // console.log("Now data will start flowing again.");
         stream.resume();
       }, 5000);
     }
-    console.log("tweetQueue.length", tweetQueue.length);
+    // console.log("tweetQueue.length", tweetQueue.length);
     if (tweetQueue.length >= 100) {
       stream.pause();
       console.log("There will be no additional data for  seconds.");
       setTimeout(() => {
-        console.log("Now data will start flowing again.");
+        // console.log("Now data will start flowing again.");
         stream.resume();
       }, 30000);
     }
@@ -145,7 +147,7 @@ function streamTweets(socket) {
         payload.text = text;
         
         const getProfilePicUrl = async (userId) => {
-          console.log("userId", userId);
+          // console.log("userId", userId);
           try {
             const response = await getUsers(userId, cont);
             const profilePicUrl =
@@ -164,7 +166,7 @@ function streamTweets(socket) {
         payload.hasTermObj = hasTermObj;
         payload.tweetId = nextTweet.data.id;
         payload.terms = terms;
-        console.log('payload', payload)
+        // console.log('payload', payload)
 
         socket.emit("tweet", payload);
       } catch (error) {

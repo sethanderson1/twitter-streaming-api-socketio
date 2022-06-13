@@ -18,8 +18,8 @@ const endpointURL = "https://api.twitter.com/2/users"
 // ?expansions=pinned_tweet_id&user.fields=profile_image_url
 
 async function getUsers(id, cont) {
-    console.log('getUsers ran')
-    console.log('cont in getUsers', cont)
+    // console.log('getUsers ran')
+    // console.log('cont in getUsers', cont)
 
     // These are the parameters for the API request
     // specify User names to fetch, and any additional fields that are required
