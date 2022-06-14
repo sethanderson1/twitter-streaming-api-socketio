@@ -55,6 +55,7 @@ function streamTweets(socket) {
         json.data.hasTermObj = hasTermObj;
         const tweetText = json.data.text;
         console.log(tweetText)
+        console.log("  ")
         tweetQueue.push(json);
         tweetCount++;
         // console.log("tweetCount", tweetCount);
@@ -87,7 +88,7 @@ function streamTweets(socket) {
 
     if (tweetQueue.length >= 20) {
       stream.pause();
-      console.log("There will be no additional data for  seconds.");
+      // console.log("There will be no additional data for  seconds.");
       setTimeout(() => {
         // console.log("Now data will start flowing again.");
         stream.resume();
@@ -96,7 +97,7 @@ function streamTweets(socket) {
     // console.log("tweetQueue.length", tweetQueue.length);
     if (tweetQueue.length >= 100) {
       stream.pause();
-      console.log("There will be no additional data for  seconds.");
+      // console.log("There will be no additional data for  seconds.");
       setTimeout(() => {
         // console.log("Now data will start flowing again.");
         stream.resume();

@@ -17,7 +17,10 @@ const tempTermList = []
 // ]
 
 //  terms = ["I wonder"]
- terms = ["phoenix"]
+//  terms = ["phoenix"]
+ console.log("process.argv", process.argv)
+terms = [...process.argv.slice(2)] || ["phoenix"]
+
 
 terms.forEach(term => {
     tempTermList.push(`"${term}"`)
